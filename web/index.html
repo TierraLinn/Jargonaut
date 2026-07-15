@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jargonaut — Universal Language Interpretation Engine</title>
+  <meta name="description" content="Instantly decipher professional jargon, internet slang, regional dialects, and idioms into clear layman's terms with interactive analogies and cognitive scaling.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Glowing Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-icon">🚀</div>
+        <div class="logo-text">
+          <h1>Jargonaut</h1>
+          <span>Universal Interpreter</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button id="nav-btn-decipher" class="nav-item active" aria-label="Open Jargon Decipherer">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Decipherer</span>
+        </button>
+        <button id="nav-btn-explorer" class="nav-item" aria-label="Open Dictionary Explorer">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-label">Lexicon & Glossary</span>
+        </button>
+        <button id="nav-btn-quiz" class="nav-item" aria-label="Open Flashcard Study Quiz">
+          <span class="nav-icon">🎮</span>
+          <span class="nav-label">Study Quiz</span>
+        </button>
+        <button id="nav-btn-settings" class="nav-item" aria-label="Open API Configuration Settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-badge fallback" id="engine-status">
+          <span class="status-dot"></span>
+          <span id="engine-status-text">Local Fallback Mode</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      
+      <!-- TAB 1: DECIPHERER -->
+      <section id="tab-decipher" class="tab-pane active">
+        <header class="section-header">
+          <h2>Universal Decipherer</h2>
+          <p>Translate dense jargon, slang, dialects, and idioms into clear layman's terms instantly.</p>
+        </header>
+
+        <div class="decipher-grid">
+          <!-- Input Area -->
+          <div class="pane-card input-pane">
+            <div class="pane-header">
+              <label for="jargon-input" class="pane-title">Source Phrasing</label>
+              <div class="dropdown-container">
+                <select id="domain-hint" aria-label="Select context category hint">
+                  <option value="">🔮 Auto-Detect Context</option>
+                  <option value="Medical Jargon">⚕️ Medical Jargon</option>
+                  <option value="Legal Jargon">⚖️ Legal Jargon</option>
+                  <option value="Financial Jargon">📈 Financial Jargon</option>
+                  <option value="Insurance Jargon">🛡️ Insurance Jargon</option>
+                  <option value="Engineering Jargon">🏗️ Engineering Jargon</option>
+                  <option value="Tech Jargon">💻 Tech & Engineering</option>
+                  <option value="Scientific Jargon">🧪 Scientific Jargon</option>
+                  <option value="Academic Jargon">🎓 Academic Jargon</option>
+                  <option value="Military Jargon">🪖 Military Jargon</option>
+                  <option value="Biblical Language">⛪ Biblical Language</option>
+                  <option value="Medieval Language">📜 Medieval Language</option>
+                  <option value="Historical Phrasing">🕰️ Historical Phrasing</option>
+                  <option value="Idioms">🎭 Idioms & Metaphors</option>
+                  <option value="Slang">💬 General Slang</option>
+                  <option value="Regional Dialects">🌏 Regional Dialects</option>
+                  <option value="Internet Language">🌐 Internet Language</option>
+                  <option value="Pop Culture">🎬 Pop Culture</option>
+                  <option value="Gaming Jargon">🎮 Gaming Jargon</option>
+                  <option value="Music Jargon">🎵 Music Jargon</option>
+                </select>
+              </div>
+            </div>
+            <textarea id="jargon-input" placeholder="Paste or type anything that makes no sense...&#10;e.g., 'The patient suffered from acute cephalgia' or 'he has unmatched rizz no cap' or 'time to shred some clean waves'"></textarea>
+            <div class="pane-footer" style="justify-content: space-between;">
+              <div style="display: flex; gap: 10px;">
+                <button id="btn-upload" class="btn btn-secondary" title="Upload text document">📁 Upload File</button>
+                <input type="file" id="file-selector" accept=".txt,.md,.json" style="display: none;">
+                <button id="btn-voice" class="btn btn-secondary" title="Start voice dictation">🎙️ Speak</button>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button id="btn-clear" class="btn btn-secondary">Clear</button>
+                <button id="btn-decipher" class="btn btn-primary">
+                  <span>Decipher Phrasing</span>
+                  <span class="btn-glow"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls & Analytics Center -->
+          <div class="analytics-card">
+            <div class="analytics-header">
+              <h3>Interpretation Hub</h3>
+            </div>
+            
+            <!-- Cognitive Slider -->
+            <div class="dial-container">
+              <div class="dial-header">
+                <span>Cognitive Dial (Output Level)</span>
+                <span class="dial-val" id="dial-level-label">Layman</span>
+              </div>
+              <div class="slider-wrapper">
+                <input type="range" id="cognitive-dial" min="1" max="3" value="2" step="1" aria-label="Set translation cognitive dial level">
+                <div class="slider-labels">
+                  <span>Pro Lite</span>
+                  <span>Layman</span>
+                  <span>ELI5</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clarity Score Gauge -->
+            <div class="metric-container">
+              <div class="metric-gauge">
+                <svg viewBox="0 0 100 100" class="gauge-svg">
+                  <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                  <circle cx="50" cy="50" r="40" class="gauge-fill" id="gauge-clarity-fill"></circle>
+                </svg>
+                <div class="gauge-text">
+                  <span class="gauge-num" id="clarity-score-val">--</span>
+                  <span class="gauge-label">Clarity</span>
+                </div>
+              </div>
+              <div class="metric-info">
+                <h4 id="detected-cat-badge">---</h4>
+                <p id="complexity-summary">Input text complexity analysis will appear here after translation.</p>
+                <button id="btn-toggle-heatmap" class="btn btn-secondary btn-sm" disabled>
+                  🔥 Toggle Heatmap
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Output Area -->
+          <div class="pane-card output-pane">
+            <div class="pane-header">
+              <span class="pane-title">Deciphered Phrasing</span>
+              <span class="output-level-badge" id="output-level-badge">Layman Terms</span>
+            </div>
+            
+            <div class="output-wrapper">
+              <div id="decipher-output" class="output-content empty">
+                Deciphered output with highlighted terms will appear here...
+              </div>
+            </div>
+
+            <div class="pane-footer" style="justify-content: space-between;">
+              <button id="btn-export-pdf" class="btn btn-secondary" disabled>💾 Export PDF Report</button>
+              <button id="btn-copy" class="btn btn-secondary" disabled>Copy Translation</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+          <h3>Recent Translations</h3>
+          <div class="history-list" id="history-items">
+            <p class="empty-state">No translation history yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: EXPLORER & CUSTOM LEXICON -->
+      <section id="tab-explorer" class="tab-pane">
+        <header class="section-header">
+          <div class="header-action-row">
+            <div>
+              <h2>Jargonaut Lexicon</h2>
+              <p>Explore pre-loaded terms or create your own custom vocabulary.</p>
+            </div>
+            <button id="btn-open-add-modal" class="btn btn-primary">
+              <span>+ Create Custom Term</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Search and Filter Bar -->
+        <div class="explorer-filter-bar">
+          <div class="search-box-wrapper">
+            <input type="text" id="lexicon-search" placeholder="Search for terms, slang, or phrases...">
+            <span class="search-icon">🔍</span>
+          </div>
+          <div class="category-tabs" id="lexicon-category-tabs">
+            <button class="cat-tab active" data-category="all">All</button>
+            <button class="cat-tab" data-category="Medical Jargon">Medical</button>
+            <button class="cat-tab" data-category="Legal Jargon">Legal</button>
+            <button class="cat-tab" data-category="Financial Jargon">Finance</button>
+            <button class="cat-tab" data-category="🛡️ Insurance Jargon">Insurance</button>
+            <button class="cat-tab" data-category="🏗️ Engineering Jargon">Engineering</button>
+            <button class="cat-tab" data-category="Tech Jargon">Tech</button>
+            <button class="cat-tab" data-category="🧪 Scientific Jargon">Scientific</button>
+            <button class="cat-tab" data-category="🎓 Academic Jargon">Academic</button>
+            <button class="cat-tab" data-category="🪖 Military Jargon">Military</button>
+            <button class="cat-tab" data-category="⛪ Biblical Language">Biblical</button>
+            <button class="cat-tab" data-category="📜 Medieval Language">Medieval</button>
+            <button class="cat-tab" data-category="🕰️ Historical Phrasing">Historical</button>
+            <button class="cat-tab" data-category="🎭 Idioms">Idioms</button>
+            <button class="cat-tab" data-category="💬 General Slang">Slang</button>
+            <button class="cat-tab" data-category="🏄 Surfer Slang">Surfer Slang</button>
+            <button class="cat-tab" data-category="💬 Gen-Z Slang">Gen-Z Slang</button>
+            <button class="cat-tab" data-category="🌏 Regional Dialects">Dialects</button>
+            <button class="cat-tab" data-category="🌐 Internet Language">Internet</button>
+            <button class="cat-tab" data-category="🎬 Pop Culture">Pop Culture</button>
+            <button class="cat-tab" data-category="🎮 Gaming Jargon">Gaming</button>
+            <button class="cat-tab" data-category="🎵 Music Jargon">Music</button>
+            <button class="cat-tab" data-category="custom">Custom</button>
+          </div>
+        </div>
+
+        <!-- Did You Mean Suggestion Bar -->
+        <div id="did-you-mean-bar" class="did-you-mean-bar hidden">
+          <span>Did you mean: </span>
+          <span id="did-you-mean-suggestions"></span>
+        </div>
+
+        <!-- Glossary Grid -->
+        <div class="glossary-grid" id="glossary-container">
+          <!-- Cards injected by app.js -->
+        </div>
+      </section>
+
+      <!-- TAB 3: STUDY QUIZ -->
+      <section id="tab-quiz" class="tab-pane">
+        <header class="section-header">
+          <h2>Lingo Study Arena</h2>
+          <p>Test your knowledge of slang, idioms, dialects, and jargon in a gamified arena.</p>
+        </header>
+
+        <div class="quiz-container">
+          <div class="quiz-score-panel">
+            <div class="score-card">
+              <span class="score-label">Score</span>
+              <span class="score-num" id="quiz-score">0</span>
+            </div>
+            <div class="score-card">
+              <span class="score-label">Streak</span>
+              <span class="score-num" id="quiz-streak">0 🔥</span>
+            </div>
+            <div class="score-card">
+              <span class="score-label">Progress</span>
+              <span class="score-num" id="quiz-progress">1 / 5</span>
+            </div>
+          </div>
+
+          <div class="quiz-play-area">
+            <!-- Flashcard -->
+            <div class="flashcard-container">
+              <div class="flashcard" id="quiz-card">
+                <div class="flashcard-front">
+                  <div class="card-category" id="quiz-card-category">Medical Jargon</div>
+                  <h3 class="card-term" id="quiz-card-term">Idiopathic</h3>
+                  <p class="card-hint">Click Card to Flip / See Layman Version</p>
+                </div>
+                <div class="flashcard-back">
+                  <div class="card-category">Definition</div>
+                  <p class="card-definition" id="quiz-card-definition">
+                    A disease or condition that arises spontaneously or for which the cause is unknown.
+                  </p>
+                  <div class="card-analogy-box">
+                    <strong>LEGO Analogy:</strong>
+                    <span id="quiz-card-analogy">It's like a LEGO tower falling down suddenly when no one was touching it.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quiz Multiple Choices -->
+            <div class="quiz-choices" id="quiz-options-container">
+              <!-- Dynamically populated buttons -->
+            </div>
+
+            <!-- Quiz Action controls -->
+            <div class="quiz-controls hidden" id="quiz-next-controls">
+              <div id="quiz-feedback-text" class="feedback-msg">Correct! Keep it up!</div>
+              <button id="btn-next-question" class="btn btn-primary">Next Challenge</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: SETTINGS -->
+      <section id="tab-settings" class="tab-pane">
+        <header class="section-header">
+          <h2>System Configuration</h2>
+          <p>Manage your Jargonaut configurations and connect external services.</p>
+        </header>
+
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>Gemini AI Integration</h3>
+            <p class="settings-desc">
+              Paste your Gemini API Key to unlock real-time, context-aware translations for any input text, customized analogy generation, and automatic dialect interpretation.
+            </p>
+            <div class="form-group">
+              <label for="settings-api-key">Gemini API Key</label>
+              <div class="input-password-wrapper">
+                <input type="password" id="settings-api-key" placeholder="AIzaSy...">
+                <button type="button" id="btn-toggle-key-visibility" class="btn-toggle-view" aria-label="Toggle API Key visibility">👁️</button>
+              </div>
+              <small class="helper-text">Your API key is stored securely in your browser's local storage and is never sent to any server other than the Google Gemini API.</small>
+            </div>
+            <div class="settings-actions">
+              <button id="btn-save-settings" class="btn btn-primary">Save Key</button>
+              <button id="btn-clear-settings" class="btn btn-secondary">Delete Key</button>
+            </div>
+          </div>
+
+          <div class="settings-card info-card">
+            <h3>Why add a Gemini Key?</h3>
+            <ul class="benefits-list">
+              <li><strong>Infinite Vocabulary:</strong> Decode arbitrary slang, idioms, or sentences from any culture.</li>
+              <li><strong>Smart Slang & Dialect Recognition:</strong> Get instant explanations for regional sayings (e.g. surfers, developers, cockneys, gaming terminology).</li>
+              <li><strong>Interactive Analogies:</strong> Generates fresh sports, cooking, and LEGO comparisons customized to your text.</li>
+              <li><strong>Automatic Dial Formatting:</strong> Instantly rewrites your phrases into different difficulty levels.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- POPUP: ADD CUSTOM TERM MODAL -->
+  <div id="custom-term-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create Custom Lexicon Entry</h3>
+        <button id="btn-close-modal" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="custom-term-form">
+        <div class="form-group">
+          <label for="custom-term">Term / Phrase</label>
+          <input type="text" id="custom-term" required placeholder="e.g. In perpetuity, Rizz, Spaghetti Code">
+        </div>
+        <div class="form-group">
+          <label for="custom-category">Category</label>
+          <select id="custom-category" required>
+            <option value="Medical Jargon">Medical Jargon</option>
+            <option value="Legal Jargon">Legal Jargon</option>
+            <option value="Financial Jargon">Financial Jargon</option>
+            <option value="🛡️ Insurance Jargon">🛡️ Insurance Jargon</option>
+            <option value="🏗️ Engineering Jargon">🏗️ Engineering Jargon</option>
+            <option value="Tech Jargon">Tech Jargon</option>
+            <option value="🧪 Scientific Jargon">🧪 Scientific Jargon</option>
+            <option value="🎓 Academic Jargon">🎓 Academic Jargon</option>
+            <option value="🪖 Military Jargon">🪖 Military Jargon</option>
+            <option value="⛪ Biblical Language">⛪ Biblical Language</option>
+            <option value="📜 Medieval Language">📜 Medieval Language</option>
+            <option value="🕰️ Historical Phrasing">🕰️ Historical Phrasing</option>
+            <option value="🎭 Idioms">🎭 Idioms</option>
+            <option value="💬 General Slang">💬 General Slang</option>
+            <option value="🏄 Surfer Slang">🏄 Surfer Slang</option>
+            <option value="💬 Gen-Z Slang">💬 Gen-Z Slang</option>
+            <option value="🌏 Regional Dialects">🌏 Regional Dialects</option>
+            <option value="🌐 Internet Language">🌐 Internet Language</option>
+            <option value="🎬 Pop Culture">🎬 Pop Culture</option>
+            <option value="🎮 Gaming Jargon">🎮 Gaming Jargon</option>
+            <option value="🎵 Music Jargon">🎵 Music Jargon</option>
+            <option value="Custom Term">General Custom Term</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="custom-layman">Layman's Explanation</label>
+          <textarea id="custom-layman" required placeholder="Describe it in simple, everyday language..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="custom-eli5">ELI5 Explanation</label>
+          <textarea id="custom-eli5" placeholder="How would you explain it to a 5-year-old child? (Optional)"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="custom-analogy-lego">LEGO Metaphor</label>
+          <input type="text" id="custom-analogy-lego" placeholder="It is like LEGOs because... (Optional)">
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to Lexicon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP: DETAILED DEFINITION CARD (INTERACTIVE ANALOGIZER) -->
+  <div id="term-detail-modal" class="modal-overlay">
+    <div class="modal-card detail-card">
+      <div class="modal-header">
+        <div class="detail-header-meta">
+          <span class="detail-badge" id="detail-category">Medical Jargon</span>
+          <h3 id="detail-term">Term Name</h3>
+        </div>
+        <button id="btn-close-detail-modal" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="detail-body">
+        
+        <div class="detail-section">
+          <h4>Definitions</h4>
+          <div class="def-tier">
+            <strong>Literal Meaning:</strong>
+            <p id="detail-def-literal" class="def-text">---</p>
+          </div>
+          <div class="def-tier">
+            <strong>Layman's Interpretation:</strong>
+            <p id="detail-def-layman" class="def-text highlight-box">---</p>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>The Analogizer</h4>
+          <p class="analogy-intro">Select a theme below to view this concept explained through a different lens:</p>
+          
+          <div class="analogy-selector">
+            <button class="analogy-tab active" data-theme="lego">🤖 LEGO Analogy</button>
+            <button class="analogy-tab" data-theme="sports">⚽ Sports Analogy</button>
+            <button class="analogy-tab" data-theme="cooking">🍳 Cooking Analogy</button>
+          </div>
+
+          <div class="analogy-content-box">
+            <p id="detail-analogy-content">Click a theme tab to read.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="database.js"></script>
+  <script src="gemini-api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
