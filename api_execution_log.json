@@ -1,0 +1,68 @@
+[
+  {
+    "timestamp": "2026-07-16T15:20:01.102Z",
+    "endpoint": "v1beta/models/gemini-2.5-flash:generateContent",
+    "status": 200,
+    "latency_ms": 890,
+    "input_payload": {
+      "text": "The contract was terminated due to a force majeure event in perpetuity.",
+      "domainHint": "Legal Jargon"
+    },
+    "output_payload": {
+      "detectedCategory": "⚖️ Legal Jargon",
+      "complexityScore": 25,
+      "professionalTranslation": "The contract was terminated due to a force majeure event (unexpected event like a natural disaster) in perpetuity (forever).",
+      "laymanTranslation": "The agreement was ended because of an unavoidable accident, and this cancellation lasts forever.",
+      "eli5Translation": "The promise paper was stopped forever because of a giant storm (like a dog stepping on your LEGO castle) and it can never start again.",
+      "highlightedTerms": [
+        {
+          "term": "Force Majeure",
+          "category": "⚖️ Legal Jargon",
+          "literal": "Superior force.",
+          "laymanExplanation": "An unexpected event, like a natural disaster, that prevents someone from fulfilling a contract.",
+          "legoAnalogy": "It's like a big storm breaking your LEGO tower.",
+          "sportsAnalogy": "It's like a rainout cancelling the game.",
+          "cookingAnalogy": "It's like the power going out mid-bake."
+        }
+      ]
+    },
+    "token_metrics": {
+      "prompt_tokens": 320,
+      "completion_tokens": 182,
+      "total_tokens": 502
+    }
+  },
+  {
+    "timestamp": "2026-07-16T15:22:45.312Z",
+    "endpoint": "v1beta/models/gemini-2.5-flash:generateContent",
+    "status": 200,
+    "latency_ms": 954,
+    "input_payload": {
+      "text": "The idiopathic myocardial infarction was treated immediately.",
+      "domainHint": "Medical Jargon"
+    },
+    "output_payload": {
+      "detectedCategory": "🩺 Medical Jargon",
+      "complexityScore": 15,
+      "professionalTranslation": "The idiopathic (unknown cause) myocardial infarction (heart attack) was treated immediately.",
+      "laymanTranslation": "The heart attack, which happened for an unknown reason, was treated right away.",
+      "eli5Translation": "A heart attack happened for a mystery reason and the doctor fixed it quickly.",
+      "highlightedTerms": [
+        {
+          "term": "Idiopathic",
+          "category": "🩺 Medical Jargon",
+          "literal": "Of unknown cause.",
+          "laymanExplanation": "A condition that arises spontaneously without a known cause.",
+          "legoAnalogy": "Like a LEGO tower falling suddenly when no one was touching it.",
+          "sportsAnalogy": "Like a referee calling a foul but nobody knows what rule was broken.",
+          "cookingAnalogy": "Like a cake collapsing even though you followed the recipe perfectly."
+        }
+      ]
+    },
+    "token_metrics": {
+      "prompt_tokens": 345,
+      "completion_tokens": 205,
+      "total_tokens": 550
+    }
+  }
+]
