@@ -54,3 +54,11 @@ Or find the precompiled APK at `/android/app/build/outputs/apk/debug/app-debug.a
 
 ## 🛠️ Built With
 `Kotlin`, `Jetpack Compose`, `JavaScript (ES6)`, `HTML5`, `CSS3 (Vanilla)`, `Gemini API`, `SharedPreferences`, `LocalStorage`, `Web Speech API`, `Levenshtein Matrix`
+
+---
+
+## 🤖 AI Development Integration (Codex & GPT-5.6)
+
+Jargonaut was developed with advanced AI pair-programming assistance:
+*   **Codex**: Used to write and optimize Jetpack Compose layouts, resolve Kotlin compiler issues, and configure gradle setups.
+*   **GPT-5.6**: Used to structure prompt schemas for LLM translations, design the monorepo architecture, and optimize the fuzzy Levenshtein suggestion logic.
