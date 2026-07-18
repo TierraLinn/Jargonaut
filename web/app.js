@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
   let appState = {
     apiKey: localStorage.getItem("jargonaut_api_key") || "",
-    stripeLink: localStorage.getItem("jargonaut_stripe_link") || "",
+    stripeLink: localStorage.getItem("jargonaut_stripe_link") || "https://buy.stripe.com/aFa8wH3Wb82g2xRbb10V001",
     isPremium: localStorage.getItem("jargonaut_premium") === "true",
     translationCount: parseInt(localStorage.getItem("jargonaut_translation_count") || "0"),
     currentTab: "decipher",
