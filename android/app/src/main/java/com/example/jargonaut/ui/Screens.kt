@@ -69,6 +69,9 @@ fun DecipherScreen(modifier: Modifier = Modifier) {
     var isHeatmapActive by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    // Stripe Freemium State
+    var showUpgradeDialog by remember { mutableStateOf(false) }
+
     // Bottom Sheet Analogy State
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedTerm by remember { mutableStateOf<Term?>(null) }
@@ -79,6 +82,53 @@ fun DecipherScreen(modifier: Modifier = Modifier) {
 
     LaunchedEffect(Unit) {
         apiKey.value = sharedPrefs.getString("api_key", "") ?: ""
+    }
+
+    if (showUpgradeDialog) {
+        val stripeLink = GlossaryDatabase.getStripeLink(context).ifEmpty { "https://buy.stripe.com/mock_premium_checkout" }
+        Dialog(onDismissRequest = { showUpgradeDialog = false }) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = CardBg),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text("👑 Jargonaut Premium", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        "You have reached the free limit of 3 translation requests. Upgrade to premium to unlock unlimited translations, direct document uploads, and reports.",
+                        color = LightGray,
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = { showUpgradeDialog = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                        ) {
+                            Text("Cancel")
+                        }
+                        Button(
+                            onClick = {
+                                try {
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(stripeLink))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Could not open link", Toast.LENGTH_SHORT).show()
+                                }
+                                showUpgradeDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = ElectricViolet)
+                        ) {
+                            Text("Upgrade ($7.99/mo)")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Column(
@@ -170,6 +220,13 @@ fun DecipherScreen(modifier: Modifier = Modifier) {
                         Button(
                             onClick = {
                                 if (inputPhrase.trim().isEmpty()) return@Button
+                                val isPremium = GlossaryDatabase.isPremium(context)
+                                val count = GlossaryDatabase.getTranslationCount(context)
+                                if (!isPremium && count >= 3) {
+                                    showUpgradeDialog = true
+                                    return@Button
+                                }
+
                                 isLoading = true
                                 coroutineScope.launch {
                                     try {
@@ -181,6 +238,9 @@ fun DecipherScreen(modifier: Modifier = Modifier) {
                                             // Fallback local translator
                                             val res = performLocalTranslation(context, inputPhrase, domainHint)
                                             translationResult = res
+                                        }
+                                        if (!isPremium) {
+                                            GlossaryDatabase.incrementTranslationCount(context)
                                         }
                                     } catch (e: Exception) {
                                         Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -1037,25 +1097,30 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     var apiKeyInput by remember { mutableStateOf(sharedPrefs.getString("api_key", "") ?: "") }
     var isKeyVisible by remember { mutableStateOf(false) }
 
+    var stripeLinkInput by remember { mutableStateOf(GlossaryDatabase.getStripeLink(context)) }
+    var isPremium by remember { mutableStateOf(GlossaryDatabase.isPremium(context)) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(DeepSlate)
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Column {
             Text("Configuration Panel", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
-            Text("Adjust Jargonaut APIs and keys.", fontSize = 14.sp, color = LightGray)
+            Text("Adjust Jargonaut APIs and billing configs.", fontSize = 14.sp, color = LightGray)
         }
 
+        // Card 1: Gemini AI Key settings
         Card(
             colors = CardDefaults.cardColors(containerColor = CardBg),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Gemini API Key", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Gemini AI Integration", color = Color.White, fontWeight = FontWeight.Bold)
                 Text(
                     "Paste your Gemini API key from AI Studio to unlock dynamic translation mappings and heatmaps.",
                     color = LightGray,
@@ -1109,6 +1174,76 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                     ) {
                         Text("Delete Key")
+                    }
+                }
+            }
+        }
+
+        // Card 2: Stripe Monetization settings
+        Card(
+            colors = CardDefaults.cardColors(containerColor = CardBg),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Stripe Monetization", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (isPremium) "👑 Premium Tier: Active" else "⭐ Premium Tier: Free (3 Limit)",
+                    color = if (isPremium) WarningAmber else LightGray,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+
+                OutlinedTextField(
+                    value = stripeLinkInput,
+                    onValueChange = { stripeLinkInput = it },
+                    placeholder = { Text("https://buy.stripe.com/...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = ElectricViolet,
+                        unfocusedBorderColor = Color.DarkGray
+                    )
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = {
+                            GlossaryDatabase.setStripeLink(context, stripeLinkInput.trim())
+                            Toast.makeText(context, "Stripe Link saved successfully!", Toast.LENGTH_SHORT).show()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = ElectricViolet)
+                    ) {
+                        Text("Save Stripe Link")
+                    }
+
+                    if (!isPremium) {
+                        Button(
+                            onClick = {
+                                val link = stripeLinkInput.trim().ifEmpty { "https://buy.stripe.com/mock_premium_checkout" }
+                                try {
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(link))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Could not open link", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = WarningAmber)
+                        ) {
+                            Text("Upgrade Now")
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                GlossaryDatabase.setPremium(context, false)
+                                isPremium = false
+                                Toast.makeText(context, "Premium status reset (free tier).", Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                        ) {
+                            Text("Reset Free Tier")
+                        }
                     }
                 }
             }

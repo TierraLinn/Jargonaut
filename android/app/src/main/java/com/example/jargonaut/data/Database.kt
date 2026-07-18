@@ -295,6 +295,42 @@ object GlossaryDatabase {
 
         return SearchResult(null, suggestions.take(3))
     }
+
+    private const val PREMIUM_STATUS_KEY = "jargonaut_premium"
+    private const val STRIPE_LINK_KEY = "jargonaut_stripe_link"
+    private const val TRANSLATION_COUNT_KEY = "jargonaut_translation_count"
+
+    fun isPremium(context: Context): Boolean {
+        val prefs = getPrefs(context)
+        return prefs.getBoolean(PREMIUM_STATUS_KEY, false)
+    }
+
+    fun setPremium(context: Context, status: Boolean) {
+        val prefs = getPrefs(context)
+        prefs.edit().putBoolean(PREMIUM_STATUS_KEY, status).apply()
+    }
+
+    fun getStripeLink(context: Context): String {
+        val prefs = getPrefs(context)
+        val link = prefs.getString(STRIPE_LINK_KEY, "") ?: ""
+        return if (link.isEmpty()) "https://buy.stripe.com/aFa8wH3Wb82g2xRbb10V001" else link
+    }
+
+    fun setStripeLink(context: Context, url: String) {
+        val prefs = getPrefs(context)
+        prefs.edit().putString(STRIPE_LINK_KEY, url).apply()
+    }
+
+    fun getTranslationCount(context: Context): Int {
+        val prefs = getPrefs(context)
+        return prefs.getInt(TRANSLATION_COUNT_KEY, 0)
+    }
+
+    fun incrementTranslationCount(context: Context) {
+        val prefs = getPrefs(context)
+        val current = prefs.getInt(TRANSLATION_COUNT_KEY, 0)
+        prefs.edit().putInt(TRANSLATION_COUNT_KEY, current + 1).apply()
+    }
 }
 
 data class SearchResult(

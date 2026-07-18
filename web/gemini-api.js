@@ -5,7 +5,7 @@ async function translateWithGemini(text, domainHint, apiKey) {
     throw new Error("Gemini API Key is required.");
   }
 
-  const model = "gemini-2.5-flash"; // Use fast and powerful 2.5 flash
+  const model = "gemini-1.5-flash"; // Use fast and powerful 1.5 flash
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const systemInstruction = `You are Jargonaut, a Universal Language Interpretation Engine.

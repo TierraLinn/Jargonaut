@@ -21,7 +21,7 @@ data class ApiTranslationResult(
 )
 
 object GeminiApi {
-    private const val MODEL = "gemini-2.5-flash"
+    private const val MODEL = "gemini-1.5-flash"
 
     suspend fun translateText(text: String, domainHint: String?, apiKey: String): ApiTranslationResult = withContext(Dispatchers.IO) {
         val urlStr = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL:generateContent?key=$apiKey"
