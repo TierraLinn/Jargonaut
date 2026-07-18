@@ -57,6 +57,10 @@
           <span class="status-dot"></span>
           <span id="engine-status-text">Local Fallback Mode</span>
         </div>
+        <div id="premium-sidebar-badge" class="status-badge fallback" style="margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: stretch; text-align: center; background: rgba(255, 255, 255, 0.05); padding: 10px;">
+          <span id="premium-badge-text" style="font-weight: 600; color: #9ca3af;">⭐ Free Tier (3 limit)</span>
+          <button id="btn-sidebar-upgrade" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 11px; padding: 4px 8px;">Upgrade Now</button>
+        </div>
       </div>
     </aside>
 
@@ -335,6 +339,21 @@
             </div>
           </div>
 
+          <div class="settings-card">
+            <h3>Stripe Monetization Settings</h3>
+            <p class="settings-desc">
+              Configure your Stripe Payment Link URL to connect your checkout workflow.
+            </p>
+            <div class="form-group">
+              <label for="settings-stripe-link">Stripe Payment Link URL</label>
+              <input type="text" id="settings-stripe-link" placeholder="https://buy.stripe.com/..." style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+              <small class="helper-text">Redirect URI set on Stripe Dashboard: http://localhost:8080/?status=success</small>
+            </div>
+            <div class="settings-actions">
+              <button id="btn-save-stripe" class="btn btn-primary">Save Stripe Link</button>
+            </div>
+          </div>
+
           <div class="settings-card info-card">
             <h3>Why add a Gemini Key?</h3>
             <ul class="benefits-list">
@@ -449,6 +468,35 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP: UPGRADE TO PREMIUM MODAL -->
+  <div id="upgrade-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Upgrade to Jargonaut Premium</h3>
+        <button id="btn-close-upgrade-modal" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div style="padding: 20px 0; text-align: center;">
+        <span style="font-size: 48px;">👑</span>
+        <h4 style="margin: 15px 0 10px 0; font-size: 18px; color: #fff;">Unlock Unlimited Power</h4>
+        <p style="color: #9ca3af; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
+          You have reached the free limit or tried to access a premium feature. Upgrade to premium to unlock:
+        </p>
+        <ul style="text-align: left; display: inline-block; color: #e5e7eb; font-size: 13px; line-height: 2; margin-bottom: 25px; list-style-type: '✔️ ';">
+          <li>Unlimited AI translation requests</li>
+          <li>Direct document file uploads (.txt, .md, .json)</li>
+          <li>Real-time speech-to-text dictation</li>
+          <li>One-click PDF clarity report exporting</li>
+        </ul>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="btn-upgrade-checkout" class="btn btn-primary" style="padding: 10px 20px;">
+            <span>Buy Premium ($7.99/mo)</span>
+          </button>
+          <button id="btn-upgrade-cancel" class="btn btn-secondary">Maybe Later</button>
+        </div>
       </div>
     </div>
   </div>

@@ -7,6 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
   let appState = {
     apiKey: localStorage.getItem("jargonaut_api_key") || "",
+    stripeLink: localStorage.getItem("jargonaut_stripe_link") || "",
+    isPremium: localStorage.getItem("jargonaut_premium") === "true",
+    translationCount: parseInt(localStorage.getItem("jargonaut_translation_count") || "0"),
     currentTab: "decipher",
     activeTranslation: null, // Stores current translation results (local or AI)
     cognitiveLevel: 2, // 1: Pro, 2: Layman, 3: ELI5
@@ -100,12 +103,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSaveSettings = document.getElementById("btn-save-settings");
   const btnClearSettings = document.getElementById("btn-clear-settings");
 
+  // Stripe & Upgrade Elements
+  const settingsStripeLink = document.getElementById("settings-stripe-link");
+  const btnSaveStripe = document.getElementById("btn-save-stripe");
+  const upgradeModal = document.getElementById("upgrade-modal");
+  const btnCloseUpgradeModal = document.getElementById("btn-close-upgrade-modal");
+  const btnUpgradeCheckout = document.getElementById("btn-upgrade-checkout");
+  const btnUpgradeCancel = document.getElementById("btn-upgrade-cancel");
+  const premiumSidebarBadge = document.getElementById("premium-sidebar-badge");
+  const premiumBadgeText = document.getElementById("premium-badge-text");
+  const btnSidebarUpgrade = document.getElementById("btn-sidebar-upgrade");
+
 
   // ==========================================
   // INITIALIZATION
   // ==========================================
   function init() {
     updateEngineStatusBadge();
+    updatePremiumUI();
+    checkUrlRedirectForPremium();
     setupNavigation();
     setupDecipherer();
     setupExplorer();
@@ -206,6 +222,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Trigger file selection dialog
     btnUpload.addEventListener("click", () => {
+      if (!appState.isPremium) {
+        showUpgradeModal();
+        return;
+      }
       fileSelector.click();
     });
 
@@ -239,6 +259,10 @@ document.addEventListener("DOMContentLoaded", () => {
     inputPane.addEventListener("drop", (e) => {
       e.preventDefault();
       inputPane.style.borderColor = "";
+      if (!appState.isPremium) {
+        showUpgradeModal();
+        return;
+      }
       const file = e.dataTransfer.files[0];
       if (file && (file.name.endsWith(".txt") || file.name.endsWith(".md") || file.name.endsWith(".json"))) {
         const reader = new FileReader();
@@ -288,6 +312,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     btnVoice.addEventListener("click", () => {
+      if (!appState.isPremium) {
+        showUpgradeModal();
+        return;
+      }
       if (!recognition) {
         alert("Speech recognition is not supported in this browser.");
         return;
@@ -316,6 +344,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Export PDF Print Action
     btnExportPdf.addEventListener("click", () => {
+      if (!appState.isPremium) {
+        showUpgradeModal();
+        return;
+      }
       window.print();
     });
 
@@ -353,6 +385,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = jargonInput.value.trim();
     if (!text) return;
 
+    if (!appState.isPremium && appState.translationCount >= 3) {
+      showUpgradeModal();
+      return;
+    }
+
     btnDecipher.disabled = true;
     btnDecipher.querySelector("span").textContent = "Decoding Phrase...";
     decipherOutput.innerHTML = '<div class="empty">Analyzing context and translation structures...</div>';
@@ -382,6 +419,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Save to history
       saveToHistory(text, appState.activeTranslation.detectedCategory, appState.activeTranslation);
+
+      // Increment limits if free user
+      if (!appState.isPremium) {
+        appState.translationCount++;
+        localStorage.setItem("jargonaut_translation_count", appState.translationCount.toString());
+        updatePremiumUI();
+      }
 
     } catch (err) {
       decipherOutput.innerHTML = `<div class="empty" style="color: var(--color-danger)">Translation Error: ${err.message}. Check your API settings.</div>`;
@@ -1018,6 +1062,71 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Gemini API Key removed.");
       }
     });
+
+    // Stripe Save Link
+    if (appState.stripeLink) {
+      settingsStripeLink.value = appState.stripeLink;
+    }
+    
+    btnSaveStripe.addEventListener("click", () => {
+      const linkVal = settingsStripeLink.value.trim();
+      if (!linkVal) {
+        alert("Please enter a valid Stripe Payment Link URL.");
+        return;
+      }
+      localStorage.setItem("jargonaut_stripe_link", linkVal);
+      appState.stripeLink = linkVal;
+      alert("Stripe Payment Link URL successfully saved!");
+    });
+
+    // Upgrade Modal controls
+    btnCloseUpgradeModal.addEventListener("click", hideUpgradeModal);
+    btnUpgradeCancel.addEventListener("click", hideUpgradeModal);
+    btnSidebarUpgrade.addEventListener("click", showUpgradeModal);
+
+    btnUpgradeCheckout.addEventListener("click", () => {
+      const checkoutUrl = appState.stripeLink || "https://buy.stripe.com/mock_premium_checkout";
+      window.open(checkoutUrl, "_blank");
+      hideUpgradeModal();
+    });
+  }
+
+  function showUpgradeModal() {
+    upgradeModal.classList.add("active");
+  }
+
+  function hideUpgradeModal() {
+    upgradeModal.classList.remove("active");
+  }
+
+  function updatePremiumUI() {
+    if (appState.isPremium) {
+      premiumSidebarBadge.style.background = "linear-gradient(135deg, #f59e0b, #d97706)";
+      premiumSidebarBadge.style.border = "1px solid #f59e0b";
+      premiumBadgeText.textContent = "👑 Premium Activated";
+      premiumBadgeText.style.color = "#fff";
+      btnSidebarUpgrade.style.display = "none";
+    } else {
+      premiumSidebarBadge.style.background = "rgba(255, 255, 255, 0.05)";
+      premiumSidebarBadge.style.border = "1px solid rgba(255,255,255,0.1)";
+      premiumBadgeText.textContent = `⭐ Free Tier (${appState.translationCount}/3 used)`;
+      premiumBadgeText.style.color = "#9ca3af";
+      btnSidebarUpgrade.style.display = "block";
+    }
+  }
+
+  function checkUrlRedirectForPremium() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("status") === "success") {
+      localStorage.setItem("jargonaut_premium", "true");
+      appState.isPremium = true;
+      updatePremiumUI();
+      
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      
+      alert("👑 Congratulations! Jargonaut Premium has been successfully activated!");
+    }
   }
 
   // Start app
