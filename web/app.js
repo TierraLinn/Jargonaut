@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnUpload = document.getElementById("btn-upload");
   const fileSelector = document.getElementById("file-selector");
   const btnExportPdf = document.getElementById("btn-export-pdf");
+  const btnListen = document.getElementById("btn-listen");
   const cognitiveDial = document.getElementById("cognitive-dial");
   const dialLevelLabel = document.getElementById("dial-level-label");
   const outputLevelBadge = document.getElementById("output-level-badge");
@@ -82,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const termDetailModal = document.getElementById("term-detail-modal");
   const btnCloseDetailModal = document.getElementById("btn-close-detail-modal");
+  const btnAddToDeck = document.getElementById("btn-add-to-deck");
 
   // Quiz Tab
   const quizScore = document.getElementById("quiz-score");
@@ -199,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
       decipherOutput.classList.add("empty");
       btnCopy.disabled = true;
       btnExportPdf.disabled = true;
+      btnListen.disabled = true;
       btnToggleHeatmap.disabled = true;
       resetClarityGauge();
       appState.activeTranslation = null;
@@ -351,6 +354,52 @@ document.addEventListener("DOMContentLoaded", () => {
       window.print();
     });
 
+    // Listen TTS Action
+    let isSpeaking = false;
+    btnListen.addEventListener("click", () => {
+      if (!appState.isPremium) {
+        showUpgradeModal();
+        return;
+      }
+      if (!('speechSynthesis' in window)) {
+        alert("Text-to-speech is not supported in this browser.");
+        return;
+      }
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        stopSpeaking();
+      } else {
+        const textToSpeak = decipherOutput.textContent.trim();
+        if (!textToSpeak) return;
+
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        
+        utterance.onend = () => {
+          stopSpeaking();
+        };
+
+        utterance.onerror = (e) => {
+          console.error("SpeechSynthesis error", e);
+          stopSpeaking();
+        };
+
+        isSpeaking = true;
+        btnListen.textContent = "⏹️ Stop";
+        btnListen.style.borderColor = "var(--color-danger)";
+        btnListen.style.color = "var(--color-danger)";
+        
+        window.speechSynthesis.speak(utterance);
+      }
+    });
+
+    function stopSpeaking() {
+      isSpeaking = false;
+      btnListen.textContent = "🔊 Listen";
+      btnListen.style.borderColor = "";
+      btnListen.style.color = "";
+    }
+
     // Heatmap trigger
     btnToggleHeatmap.addEventListener("click", () => {
       appState.isHeatmapActive = !appState.isHeatmapActive;
@@ -415,6 +464,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       btnCopy.disabled = false;
       btnExportPdf.disabled = false;
+      btnListen.disabled = false;
       btnToggleHeatmap.disabled = false;
 
       // Save to history
@@ -643,6 +693,7 @@ document.addEventListener("DOMContentLoaded", () => {
           
           btnCopy.disabled = false;
           btnExportPdf.disabled = false;
+          btnListen.disabled = false;
           btnToggleHeatmap.disabled = false;
         });
       });
@@ -868,6 +919,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // Setup detail modal listeners
   btnCloseDetailModal.addEventListener("click", () => {
     termDetailModal.classList.remove("active");
+  });
+
+  btnAddToDeck.addEventListener("click", () => {
+    if (!activeDetailTerm) return;
+    
+    const newTermObj = {
+      term: activeDetailTerm.term,
+      category: activeDetailTerm.category,
+      literal: activeDetailTerm.literal || activeDetailTerm.literalMeaning || "Discovered from decipher engine.",
+      layman: activeDetailTerm.layman || activeDetailTerm.laymanExplanation,
+      eli5: activeDetailTerm.eli5 || activeDetailTerm.laymanExplanation || activeDetailTerm.layman,
+      professional: activeDetailTerm.professional || activeDetailTerm.laymanExplanation || activeDetailTerm.layman,
+      analogies: {
+        lego: activeDetailTerm.analogies?.lego || activeDetailTerm.legoAnalogy || "Standard brick metaphor",
+        sports: activeDetailTerm.analogies?.sports || activeDetailTerm.sportsAnalogy || "Standard game metaphor",
+        cooking: activeDetailTerm.analogies?.cooking || activeDetailTerm.cookingAnalogy || "Standard recipe metaphor"
+      },
+      isCustom: true
+    };
+
+    const success = addCustomTerm(newTermObj);
+    if (success) {
+      alert(`"${activeDetailTerm.term}" added to your custom Study Deck! You can now test yourself in the Quiz tab.`);
+    } else {
+      alert(`"${activeDetailTerm.term}" is already in your Lexicon and Quiz deck!`);
+    }
   });
 
   termDetailModal.querySelectorAll(".analogy-tab").forEach(tab => {

@@ -179,7 +179,10 @@
             </div>
 
             <div class="pane-footer" style="justify-content: space-between;">
-              <button id="btn-export-pdf" class="btn btn-secondary" disabled>💾 Export PDF Report</button>
+              <div style="display: flex; gap: 10px;">
+                <button id="btn-export-pdf" class="btn btn-secondary" disabled>💾 Export PDF Report</button>
+                <button id="btn-listen" class="btn btn-secondary" disabled title="Listen to translation text-to-speech">🔊 Listen</button>
+              </div>
               <button id="btn-copy" class="btn btn-secondary" disabled>Copy Translation</button>
             </div>
           </div>
@@ -466,6 +469,10 @@
           <div class="analogy-content-box">
             <p id="detail-analogy-content">Click a theme tab to read.</p>
           </div>
+        </div>
+
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+          <button id="btn-add-to-deck" class="btn btn-primary" style="font-size: 0.85rem; padding: 8px 16px;">🎴 Add to Quiz Deck</button>
         </div>
 
       </div>
